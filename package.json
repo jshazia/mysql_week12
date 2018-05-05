@@ -1,0 +1,24 @@
+{
+  "name": "mysql_week12",
+  "version": "1.0.0",
+  "description": "week 12 homework",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jshazia/mysql_week12.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jshazia/mysql_week12/issues"
+  },
+  "homepage": "https://github.com/jshazia/mysql_week12#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^5.2.0",
+    "mysql": "^2.15.0"
+  }
+}

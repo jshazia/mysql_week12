@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-var cTable = require("console.table");
+const {table} = require('table');
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -60,80 +60,18 @@ function addInventory(){}
 function lowInventory(){}
 
 function displayItems() {
-    connection.query("SELECT * FROM products;", function(err, res) {
-        console.table([
-            {
-                product_name: 'apple',
-                department_name: 'fruits',
-                price: 1.34,
-                stock_quantity: 12
-            }, {
 
-                product_name: 'lettuce',
-                department_name: 'vegetables',
-                price: 0.25,
-                stock_quantity: 63
+        connection.query("SELECT item_id, product_name, department_name, price, stock_quantity FROM products", function(err, res) {
+            if (err) throw err;
 
-            }, {
-
-                product_name: 'shampoo',
-                department_name: 'bath',
-                price: 5.45,
-                stock_quantity: 134
-
-            }, {
-
-                product_name: 'shirt',
-                department_name: 'clothing',
-                price: 2.28,
-                stock_quantity: 76
-
-            }, {
-
-                product_name: 'hat',
-                department_name: 'clothing',
-                price: 1.36,
-                stock_quantity: 9
-
-            }, {
-
-                product_name: 'watermelon',
-                department_name: 'fruits',
-                price: 1.00,
-                stock_quantity: 42
-
-            }, {
-
-                product_name: 'carrot',
-                department_name: 'vegetables',
-                price: 0.42,
-                stock_quantity: 45
-
-            }, {
-
-                product_name: 'conditioner',
-                department_name: 'bath',
-                price: 3.78,
-                stock_quantity: 37
-
-            }, {
-
-                product_name: 'ipod',
-                department_name: 'electronics',
-                price: 100.45,
-                stock_quantity: 98
-
-            }, {
-
-                product_name: 'headphones',
-                department_name: 'electronics',
-                price: 78.39,
-                stock_quantity: 82
+            for (var i = 0; i < res.length; i++) {
+                console.log(res[i]);
+                console.log("-----------------------------------");
 
             }
-        ]);
-        run();
-    });
+            run();
+
+        })
 
 }
 
@@ -156,20 +94,36 @@ function buy() {
            connection.query(
                "SELECT * FROM products WHERE item_id =" + answer.productid, function(err, res) {
                    if (err) throw (err);
+                   var selectProduct = answer.productid - 1;
 
-                   if (res[0].stock_quantity === 0) {
+                   if (res[selectProduct].stock_quantity === 0) {
                        console.log("Sorry we're out of stock");
                        run();
                    }
-                   else if (res[0].stock_quantity < answer.numberOfUnits) {
+                   else if (res[selectProduct].stock_quantity < answer.numberOfUnits) {
                        console.log("sorry we don't have that many in stock, there are only " + res[0].stock_quantity + " remaining!");
                        run();
                    }
                    else {
-                       console.log("You just bought " + answer.numberOfUnits + " " + res[0].product_name);
+                       var updateStock = res[selectProduct].stock_quantity - answer.numberOfUnits;
+                       var itemPrice = res[selectProduct].price;
+                       var totalPrice = answer.numberOfUnits * itemPrice;
+                       var query = "UPDATE products SET stock_quantity = ? WHERE item_id = ?";
 
-                       run();
+                       connection.query(query, [updateStock, answer.productid], function(err, res) {
+                           if (err) throw err;
+
+                           console.log("You just bought " + answer.numberOfUnits + " items");
+                           console.log("Your total cost is: " + totalPrice);
+                           run ();
+
+                       });
+
+
+
+
                    }
+
                })
 
            })
